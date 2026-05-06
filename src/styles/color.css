@@ -24,10 +24,10 @@
   --color-blue-950: #1a212d;
 
   /*other*/
-  --background: #f5f7fa;
-  --state: #ff6577;
-  --line-100: #f2f2f2;
-  --line-2: #cfdbea;
+  --color-background: #f5f7fa;
+  --color-state: #ff6577;
+  --color-line-100: #f2f2f2;
+  --color-line-2: #cfdbea;
 
   /*gray*/
   --color-gray-100: #dedede;

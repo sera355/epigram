@@ -1,9 +1,10 @@
-import Header from '@/components/Header/Header';
+import SimpleHeader from '@/components/Header/SimpleHeader';
 
 export default function SignIn() {
   return (
     <>
-      <Header />
+      <SimpleHeader />
+      <main></main>
     </>
   );
 }

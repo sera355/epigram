@@ -3,7 +3,7 @@ import user from '@/assets/icons/user.svg';
 
 export default function Header() {
   return (
-    <header className="flex h-20 w-full items-center justify-between border-b border-[var(--line-100)] bg-white px-[120px] py-[26px]">
+    <header className="flex h-20 w-full items-center justify-between border-b border-[var(--color-line-100)] bg-white px-[120px] py-[26px]">
       <div className="flex items-center gap-[36px]">
         <img src={logo} alt="Epigram"></img>
         <div className="text-base font-semibold text-center justify-start text-neutral-700 leading-6">
