@@ -1,35 +1,36 @@
  import Header from '@/components/Header/Header';
- import {useNavigate} from 'react-router-dom';
-import {useState} from 'react';
+// import {useNavigate} from 'react-router-dom';
+// import {useState} from 'react';
 
 export default function AddEpigram() {
   
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
-  const [content, setContent] = useState('');
-  const [author, setAuthor] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
+  // const [content, setContent] = useState('');
+  // const [author, setAuthor] = useState('');
+  // const [tags, setTags] = useState<string[]>([]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    const savedEpigrams = localStorage.getItem('epigams');
-    const epigrams = savedEpigrams ? JSON.parse(savedEpigrams) : [];
+  //   const savedEpigrams = localStorage.getItem('epigams');
+  //   const epigrams = savedEpigrams ? JSON.parse(savedEpigrams) : [];
 
-    const newEpigram = {
-      id: Date.now(),
-      content,
-      author,
-      tags,
-    };
+  //   const newEpigram = {
+  //     id: Date.now(),
+  //     content,
+  //     author,
+  //     tags,
+  //   };
     
-    {/*새로 작성한 에피그램을 맨 앞에 추가하는 코드 */}
-    const nextEpigrams = [newEpigram, ...epigrams];
+  //   {/*새로 작성한 에피그램을 맨 앞에 추가하는 코드 */}
+  //   const nextEpigrams = [newEpigram, ...epigrams];
 
-    localStorage.setItem('epigrams', JSON.stringify(nextEpigrams));
+  //   localStorage.setItem('epigrams', JSON.stringify(nextEpigrams));
 
-    navigate('/feed');
-  };
+  //   navigate('/feed');
+  // };
+
   
 
   return (
