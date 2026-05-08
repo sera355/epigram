@@ -28,17 +28,17 @@ export default function EpigramCard({
           
           style={{backgroundImage: `url(${cardBg})`}}
         >
-          <p className="min-h-[72px] font-['Iropke_Batang_OTF'] text-[20px] leading-[28px] 
+          <p className="min-h-[72px] font-['Iropke_Batang'] text-[20px] leading-[28px] 
           text-(--color-black-600)">
             {content}
           </p>
 
-          <p className="mt-[16px] font-['Iropke_Batang_OTF'] text-right text-[20px] text-(--color-blue-400)">
+          <p className="mt-[16px] font-['Iropke_Batang'] text-right text-[20px] text-(--color-blue-400)">
             - {author} -
           </p>
         </section>
 
-        <div className="pt-2 font-['Iropke_Batang_OTF'] text-[20px] text-(--color-blue-400) shrink-0 text-right">
+        <div className="pt-2 font-['Iropke_Batang'] text-[20px] text-(--color-blue-400) shrink-0 text-right">
           {tags.map((tag)=>(<span key={tag}>#{tag}  </span>))}
         </div>
         

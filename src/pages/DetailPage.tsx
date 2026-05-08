@@ -74,13 +74,13 @@ export default function EpigramDetailPage() {
 
 
             {/* 본문 */}
-            <p className="font-['Iropke_Batang_OTF'] text-[32px] leading-[40px] text-(--color-black-700)">
+            <p className="font-['Iropke_Batang'] text-[32px] leading-[40px] text-(--color-black-700)">
               {mockEpigrams.content}
             </p>
 
 
             {/* 작가 */}
-            <p className="mt-[32px] font-['Iropke_Batang_OTF'] text-right text-[24px] text-[#ABB8CE]">
+            <p className="mt-[32px] font-['Iropke_Batang'] text-right text-[24px] text-[#ABB8CE]">
               - {mockEpigrams.author} -
             </p>
 
