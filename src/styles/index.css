@@ -1,3 +1,12 @@
 @import 'tailwindcss';
 @import './color.css';
 @import url('');
+
+/*font*/
+@font-face{
+  font-family: 'Iropke Batang';
+  src: url('/src/assets/fonts/IropkeBatangM.woff') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
