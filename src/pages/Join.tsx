@@ -6,29 +6,78 @@ export default function Join() {
     <main className="min-h-screen bg-[#F4F6F8]">
       <SimpleHeader />
 
-      {/*로그인 영역*/}
-      <section className="flex justify-center pt-[150px]">
+      {/* 회원가입 영역 */}
+      <section className="pt-[160px] flex justify-center pt-[80px]">
         <div className="w-[448px]">
-
-          {/*로고 스타일 적용*/}
-          <div className="mb-[40px] flex justify-center">
-            <img src={Logo} alt="logo" className="h-12" />
+          {/* 큰 로고 */}
+          <div className="mb-[64px] flex justify-center">
+            <img src={Logo} alt="Epigram" className="h-[40px]" />
           </div>
 
-          {/*폼*/}
-          {/*폼 안의 자식 요소들을 flex배치로, flex-col -> 자식 요소들을 세로 방향으로 쌓음*/}
-          <form className="flex flex-col"> 
-            <input type="email" placeholder="이메일" />
-            <input type="password" placeholder="비밀번호" />
-            <button type="submit">로그인</button>
+          <form className="flex flex-col">
+            {/* 이메일 */}
+            <label
+              htmlFor="email"
+              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
+            >
+              이메일
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="이메일"
+              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+            />
+
+            {/* 비밀번호 */}
+            <label
+              htmlFor="password"
+              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
+            >
+              비밀번호
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="비밀번호"
+              className="mb-[12px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+            />
+
+            <input
+              id="passwordConfirm"
+              type="password"
+              placeholder="비밀번호 확인"
+              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+            />
+
+            {/* 닉네임 */}
+            <label
+              htmlFor="nickname"
+              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
+            >
+              닉네임
+            </label>
+            <input
+              id="nickname"
+              type="text"
+              placeholder="닉네임"
+              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+            />
+
+            {/* 가입 버튼 */}
+            <button
+              type="submit"
+              className="h-[56px] rounded-[12px] bg-[#cbd5e1] text-[16px] font-semibold text-white"
+            >
+              가입하기
+            </button>
           </form>
 
-          {/*회원가입*/}
-          <div className="mt-[16px]  flex justify-end gap-2 text-[14px]">
-            <span className="">회원이 아니신가요?</span>
-            <button className="">가입하기</button>
+          {/* 아래 구분선 */}
+          <div className="mt-[44px] flex items-center justify-center gap-[16px]">
+            <div className="h-px w-[132px] bg-[#e5e7eb]" />
+            <div className="h-px w-[132px] bg-[#e5e7eb]" />
           </div>
-
         </div>
       </section>
     </main>

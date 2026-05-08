@@ -2,6 +2,7 @@ import SimpleHeader from '@/components/Header/SimpleHeader';
 import logo from '@/assets/images/logo-lg.svg';
 
 export default function SignIn() {
+  
   return (
     <main>
       <SimpleHeader />
