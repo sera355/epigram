@@ -5,12 +5,19 @@ import share from '@/assets/icons/Share.png';
 import like from '@/assets/icons/like.png';
 import profileImage from '@/assets/profileImages/profile01.png';
 
+import {Link} from 'react-router-dom';
+import { useState } from 'react';
+
 const mockEpigrams = {
-    id: 1,
-    content: '오랫동안 꿈을 그리는 사람은 마침내 그 꿈을 닮아 간다.',
-    tags: ['나아가야 할때', '꿈을 이루고 싶을 때'],
-    author: '안나',
     likeCount: 21,
+    tags: [{name: "나아가야 할 때", id: 1}, {name: "인생의 길", id: 2}, ],
+    writerId: 1,
+    referenceUrl: "https://www.yes24.com/product/goods/18743437",
+    referenceTitle: "왕도로 가는 길",
+    author: '안나',
+    content: '오랫동안 꿈을 그리는 사람은 마침내 그 꿈을 닮아 간다.',
+    id: 1,
+    isLiked: true,
   }
 
 const mockComments = [
@@ -42,8 +49,13 @@ const mockComments = [
   }
 ]
 
-export default function EpigramDetailPage() {
-  
+export default function  EpigramDetailPage() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  {/*좋아요 버튼 상태관리*/}
+  const [isLiked, setIsLiked] = useState(false);
+  const currentLikeCount = isLiked ? mockEpigrams.likeCount+1 : mockEpigrams.likeCount;
+
   
   return (
     <>
@@ -62,14 +74,26 @@ export default function EpigramDetailPage() {
               {/*태그*/}
               <div className="font-['Pretendard'] flex gap-[12px] text-[20px] text-(--color-blue-400)">
                 {mockEpigrams.tags.map((tag)=> (
-                  <span key={tag}>#{tag}</span>
+                  <span key={tag.id}>#{tag.name}</span>
                 ))}
               </div>
 
-              {/*더보기 버튼*/}
-              <button type="button">
-                <img src={more} className="w-[36px]"/>
-              </button>
+              {/*더보기 버튼 + 드롭다운*/}
+              <div className="relative">
+                <button type="button" onClick={()=>setIsMenuOpen((prev)=>!prev)}>
+                  <img src={more} className="w-[36px]"/>
+                </button>
+
+
+                {/*드롭다운*/}
+                {isMenuOpen && (
+                  <div className="absolute right-0 top-[48px] z-50 flex h-[112px] min-w-max flex-col rounded-[20px] border border-[#D7E0EE] bg-white shadow-sm">
+                    <button type="button" className="flex flex-1 items-center px-[32px] py-[12px] text-[20px] text-(--color-black-600) font-normal leading-[32px] gap-[10px]">수정하기</button>
+                    <button type="button" className="flex flex-1 items-center px-[32px] py-[12px] text-[20px] text-(--color-black-600) font-normal leading-[32px] gap-[10px]">삭제하기</button>
+                  </div>
+                )}
+              </div>
+              
             </div>
 
 
@@ -89,17 +113,23 @@ export default function EpigramDetailPage() {
             <div className="mt-[36px] flex justify-center gap-[12px]">
               <button
                 type="button"
-                className="flex h-[48px] items-center gap-[6px] rounded-full bg-(--color-black-600) px-[16px] text-[20px] font-['Pretendard'] font-semibold text-white"
+                onClick={()=>setIsLiked((prev)=>!prev)}
+                className={`flex h-[48px] items-center gap-[6px] rounded-full px-[16px] text-[20px] font-['Pretendard'] font-semibold 
+                  ${isLiked ? 'bg-(--color-black-600) text-white' : 'bg-(--color-line-100) text-(--color-gray-300)' }`}
               >
                 <img src={like} className="w-[36px] h-[36px]" />
-                <span>{mockEpigrams.likeCount}</span>
+                <span>{currentLikeCount}</span>
               </button>
 
               <button
                 type="button"
-                className="flex h-[48px] items-center gap-[6px] rounded-full bg-(--color-line-100) px-[16px] text-[20px] font-['Pretendard'] font-medium text-(--color-gray-300)"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(mockEpigrams.referenceUrl);
+                  alert('링크가 복사되었습니다.');
+                }}
+                className="flex h-[48px] items-center gap-[6px] rounded-full bg-(--color-line-100) px-[16px] text-[20px] font-['Pretendard'] font-medium text-(--color-gray-300) cursor-pointer"
               >
-                <span>왕도로 가는 길</span>
+                <span>{mockEpigrams.referenceTitle}</span>
                 <img src={share} className="w-[21px] h-[21px]"/>
               </button>
             </div>

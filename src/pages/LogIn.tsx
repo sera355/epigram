@@ -1,86 +1,56 @@
 import SimpleHeader from '@/components/Header/SimpleHeader';
 import logo from '@/assets/images/logo-lg.svg';
+import {Link} from 'react-router-dom';
 
-export default function SignIn() {
-  
-  return (
-    <main>
+export default function LogIn() {
+  return(
+    <>
       <SimpleHeader />
+      <main className="min-h-[calc(100vh-80px)] bg-(--color-background) pt-[293px] pb-[447px]">
+        <section className="mx-auto flex w-[608px] flex-col items-center">
+          
+          <Link to="/epigramlist" >
+            <img src={logo} alt="Epigram" className="mb-[72px] w-[158px] h-[48px]"/>
+          </Link>
+          
 
-      {/*회원가입 폼*/}
-      <section className="flex justify-center pt-[80px]">
-        <div className="w-[448px]">
-          {/* 큰 로고 */}
-          <div className="mb-[64px] flex justify-center">
-            <img src={logo} alt="Epigram" className="h-12" />
-          </div>
-
-          <form className="flex flex-col">
-            {/* 이메일 */}
-            <label
-              htmlFor="email"
-              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
-            >
-              이메일
-            </label>
+          <form className="flex w-full flex-col gap-[16px]">
             <input
-              id="email"
               type="email"
               placeholder="이메일"
-              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+              className="flex h-[64px] w-[608px] items-center gap-[8px] rounded-[12px] border border-(--color-line-100) bg-white px-[16px] text-[16px] font-medium text-(--color-black-500) placeholder:text-(--color-gray-300) outline-none"
             />
 
-            {/* 비밀번호 */}
-            <label
-              htmlFor="password"
-              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
-            >
-              비밀번호
-            </label>
             <input
-              id="password"
               type="password"
               placeholder="비밀번호"
-              className="mb-[12px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
+              className="flex h-[64px] w-[608px] items-center gap-[8px] rounded-[12px] border border-(--color-line-100) bg-white px-[16px] text-[16px] font-medium text-(--color-black-500) placeholder:text-(--color-gray-300) outline-none"
             />
 
-            <input
-              id="passwordConfirm"
-              type="password"
-              placeholder="비밀번호 확인"
-              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
-            />
-
-            {/* 닉네임 */}
-            <label
-              htmlFor="nickname"
-              className="mb-[16px] text-[16px] font-semibold text-[#4b5563]"
-            >
-              닉네임
-            </label>
-            <input
-              id="nickname"
-              type="text"
-              placeholder="닉네임"
-              className="mb-[32px] h-[52px] rounded-[12px] bg-[#eef1f5] px-[16px] text-[16px] text-[#111827] outline-none placeholder:text-[#a8b1c1]"
-            />
-
-            {/* 가입 버튼 */}
             <button
               type="submit"
-              className="h-[56px] rounded-[12px] bg-[#cbd5e1] text-[16px] font-semibold text-white"
+              className="mt-[8px] flex h-[64px] w-[608px] items-center justify-center gap-[8px] rounded-[8px] bg-(--color-blue-300) px-[16px] text-[16px] font-semibold text-white"
             >
-              가입하기
+              로그인
             </button>
           </form>
 
-          {/* 아래 구분선 */}
-          <div className="mt-[44px] flex items-center justify-center gap-[16px]">
-            <div className="h-px w-[132px] bg-[#e5e7eb]" />
-            <div className="h-px w-[132px] bg-[#e5e7eb]" />
+          <div className="mt-[16px] flex items-center w-full justify-end gap-[8px] text-[14px] font-medium">
+            <span className="text-(--color-gray-300)">회원이 아니신가요?</span>
+            <Link to="/signup" className="text-(--color-black-400) underline">
+              가입하기
+            </Link>
           </div>
-        </div>
-      </section>
-    </main>
+
+          <div className="mt-[40px] flex w-full items-center gap-[16px]">
+            <div className="h-px flex-1 bg-(--color-line-100)" />
+            <span className="text-[14px] font-medium text-(--color-gray-300)">
+              
+            </span>
+            <div className="h-px flex-1 bg-(--color-line-100)" />
+          </div>
+        </section>
+      </main>
+    </>
   );
 }

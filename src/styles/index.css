@@ -2,10 +2,21 @@
 @import './color.css';
 @import url('');
 
+body{
+  font-family: 'Pretendard', sans-serif;
+}
+
 /*font*/
 @font-face{
   font-family: 'Iropke Batang';
   src: url('/src/assets/fonts/IropkeBatangM.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face{
+  font-family: 'Pretendard';
+  src: url('/src/assets/fonts/Pretendard-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
 }

@@ -49,7 +49,7 @@ export default function MainPage(){
       <main className="min-h-screen bg-(--color-background) px-[120px] pt-[120px]">
 
         {/*카드부분*/}
-        <section className="mx-auto w-[986px]">
+        <section className="mx-auto max-w-[986px] w-full">
           <h1 className="mb-[32px] text-[24px] font-semibold text-[#2B2B2B]">
             피드
           </h1>
@@ -70,7 +70,7 @@ export default function MainPage(){
           <div className="mt-[64px] flex justify-center">
             <button className="font-['Pretendard'] flex h-[56px] items-center justify-center 
             gap-[8px] rounded-full border border-[#CFDBEA] bg-white px-[40px] 
-            text-[20px] font-medium text-(--color-blue-500)">
+            text-[20px] font-medium text-(--color-blue-500) cursor-pointer">
               <img src={plus_blue}  className="w-[24px]" />
               에피그램 더보기
             </button>
@@ -79,8 +79,9 @@ export default function MainPage(){
         </section>
 
          {/* 만들기 버튼 */}
-        <button className="w-[210px] h-[32px] font-['Pretendard'] fixed right-[80px] bottom-[60px] flex h-[56px] items-center justify-center gap-[8px] rounded-full bg-[#263346] 
-        px-[20px] text-[20px] font-normal text-white shadow-md">
+        <button className="font-['Pretendard'] fixed right-[80px] bottom-[60px] flex 
+         items-center justify-center gap-[8px] rounded-full bg-[#263346] 
+        px-[20px] py-[16px] text-[20px] font-normal text-white shadow-md cursor-pointer">
           <img src={plus_white}/>
           에피그램 만들기
         </button>

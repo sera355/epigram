@@ -23,7 +23,7 @@ export default function EpigramCard({
         
       >
         <section 
-          className="flex flex-col justify-between w-[478px] h-[210px] cursor-pointer rounded-[12px] bg-white bg-[length:100%_154px] bg-top bg-no-repeat px-[24px] py-[24px] 
+          className="flex flex-col justify-between max-w-[478px] h-[210px] cursor-pointer rounded-[12px] bg-white bg-[length:100%_154px] bg-top bg-no-repeat px-[24px] py-[24px] 
           shadow-sm transition hover:shadow-md"
           
           style={{backgroundImage: `url(${cardBg})`}}

@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import Join from './pages/Join';
+import SignUp from './pages/SignUp';
 import LogIn from './pages/LogIn';
 import AddEpigram from './pages/AddEpigram';
 import MainPage from './pages/MainPage';
@@ -10,12 +10,12 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LogIn />} />
-        <Route path="/join" element={<Join />} />
-        <Route path="/add" element={<AddEpigram />} />
-        <Route path="/" element={<MainPage />} />
-        <Route path="/detail" element={<DetailPage />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/addepigram" element={<AddEpigram />} />
+        <Route path="/epigramlist" element={<MainPage />} />
+        <Route path="/epigrams/1" element={<DetailPage />} />
       </Routes>
     </>
   );

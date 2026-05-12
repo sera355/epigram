@@ -6,7 +6,7 @@ import landing01 from '@/assets/images/img_Desktop_landing01.png';
 import landing02 from '@/assets/images/img_Desktop_landing02.png';
 import landing03 from '@/assets/images/img_Desktop_landing03.png';
 import landing04 from '@/assets/images/img_Desktop_landing04.png';
-import logo from '@/assets/images/logo2-lg.png';
+import logo from '@/assets/images/logo2-xl.png';
 
 export default function LandingPage() {
   return (
@@ -113,7 +113,7 @@ export default function LandingPage() {
           className="relative h-240 bg-position-[center_top] bg-white bg-no-repeat"
           style={{ backgroundImage: `url(${bgImage})` }}
         >
-          <img src={logo} className="mx-auto py-105 w-26.25"></img>
+          <img src={logo} className="mx-auto py-105 w-[184px]"></img>
         </section>
       </main>
     </>
