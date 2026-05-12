@@ -17,7 +17,7 @@ export default function LandingPage() {
           className="relative h-240 bg-position-[center_top] bg-white bg-no-repeat"
           style={{ backgroundImage: `url(${bgImage})` }}
         >
-          <div className="pt-80 font-['Iropke_Batang_OTF'] text-center justify-start">
+          <div className="pt-80 font-['Iropke_Batang'] text-center justify-start">
             <h1 className="text-4xl font-normal leading-16 text-(--color-black-500)">
               나만 갖고 있기엔
               <br />

@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import SimpleHeader from '@/components/Header/SimpleHeader';
 import Logo from '@/assets/images/logo-lg.svg';
 import Input from '@/components/Input';
-import { signUp } from '../apis/auth'
+import { signUp } from '../apis/auth'          
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -22,6 +22,7 @@ export default function SignUp() {
     nickname: '',
   });
 
+  {/*정규식(몰라도됨)*/}
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const validateEmail = (emailValue: string) => {
@@ -127,13 +128,14 @@ export default function SignUp() {
       navigate('/login');
     } catch (error) {
       console.error('회원가입 요청 실패:', error);
+      
+      {/*이미 존재하는 이메일일 경우*/}
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        email: '이미 존재하는 이메일입니다.',
+      }));
 
-      if (error instanceof Error) {
-        alert(error.message);
-        return;
-      }
-
-      alert('서버 요청 중 문제가 발생했습니다.');
+      
     }
   };
 
