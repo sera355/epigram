@@ -5,6 +5,7 @@ import LogIn from './pages/LogIn';
 import AddEpigram from './pages/AddEpigram';
 import MainPage from './pages/MainPage';
 import DetailPage from './pages/DetailPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -13,7 +14,11 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/addepigram" element={<AddEpigram />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/addepigram" element={<AddEpigram />} />
+        </Route>
+        
         <Route path="/epigramlist" element={<MainPage />} />
         <Route path="/epigrams/1" element={<DetailPage />} />
       </Routes>
