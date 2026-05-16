@@ -17,10 +17,11 @@ function App() {
 
         <Route element={<ProtectedRoute />}>
           <Route path="/addepigram" element={<AddEpigram />} />
+          <Route path="/epigrams/:id/edit" element={<AddEpigram />} />
         </Route>
         
         <Route path="/epigramlist" element={<MainPage />} />
-        <Route path="/epigrams/1" element={<DetailPage />} />
+        <Route path="/epigrams/:id" element={<DetailPage />} />
       </Routes>
     </>
   );

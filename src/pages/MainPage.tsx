@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import EpigramCard from '@/components/EpigramCard';
-import Header from '@/components/Header/Header';
+import { getEpigrams, type Epigram } from '@/apis/epigram';
 import plus_blue from '@/assets/icons/plus-blue.svg';
 import plus_white from '@/assets/icons/plus-white.svg';
-import { getEpigrams, type Epigram } from '@/apis/epigram';
-
+import EpigramCard from '@/components/EpigramCard';
+import Header from '@/components/Header/Header';
 
 export default function MainPage() {
   const [epigrams, setEpigrams] = useState<Epigram[]>([]);
@@ -58,7 +57,6 @@ export default function MainPage() {
       <Header />
 
       <main className="min-h-screen bg-(--color-background) px-[120px] pt-[120px]">
-        {/* 카드부분 */}
         <section className="mx-auto w-full max-w-[986px]">
           <h1 className="mb-[32px] text-[24px] font-semibold text-[#2B2B2B]">
             피드
@@ -82,7 +80,6 @@ export default function MainPage() {
             ))}
           </div>
 
-          {/* 더보기 버튼 */}
           {cursor !== null && (
             <div className="mt-[64px] flex justify-center">
               <button
@@ -93,14 +90,13 @@ export default function MainPage() {
                 gap-[8px] rounded-full border border-[#CFDBEA] bg-white px-[40px] 
                 text-[20px] font-medium text-(--color-blue-500) disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <img src={plus_blue} className="w-[24px]" />
+                <img src={plus_blue} className="w-[24px]" alt="" />
                 {isLoading ? '불러오는 중...' : '에피그램 더보기'}
               </button>
             </div>
           )}
         </section>
 
-        {/* 만들기 버튼 */}
         <Link
           to="/addepigram"
           className="font-['Pretendard'] fixed right-[80px] bottom-[60px] flex 

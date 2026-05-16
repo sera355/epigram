@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Header from '@/components/Header/Header';
-import { createEpigram } from '@/apis/epigram';
+import { createEpigram, getEpigram, updateEpigram } from '@/apis/epigram';
 
 type AuthorType = 'direct' | 'unknown' | 'me';
 
 export default function AddEpigram() {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const epigramId = Number(id);
+  const isEditMode = Number.isFinite(epigramId);
 
   const [content, setContent] = useState('');
   const [authorType, setAuthorType] = useState<AuthorType>('direct');
@@ -19,6 +22,33 @@ export default function AddEpigram() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isContentOverLimit = content.length > 500;
+
+  useEffect(() => {
+    if (!isEditMode) {
+      return;
+    }
+
+    const loadEpigram = async () => {
+      try {
+        const data = await getEpigram(epigramId);
+
+        setContent(data.content);
+        setAuthorType('direct');
+        setAuthor(data.author);
+        setReferenceTitle(data.referenceTitle ?? '');
+        setReferenceUrl(data.referenceUrl ?? '');
+        setTags(data.tags.map((tag) => tag.name));
+      } catch (error) {
+        if (error instanceof Error) {
+          alert(error.message);
+        } else {
+          alert('에피그램을 불러오지 못했습니다.');
+        }
+      }
+    };
+
+    loadEpigram();
+  }, [epigramId, isEditMode]);
 
   const getFinalAuthor = () => {
     if (authorType === 'unknown') return '알 수 없음';
@@ -49,7 +79,7 @@ export default function AddEpigram() {
     if (!trimmedTag) return;
 
     if (trimmedTag.length > 10) {
-      setTagError('태그는 10자 이내로 입력해 주세요.');
+      setTagError('태그는 10자 이내로 입력해주세요.');
       return;
     }
 
@@ -88,20 +118,28 @@ export default function AddEpigram() {
     try {
       setIsSubmitting(true);
 
-      const newEpigram = await createEpigram({
+      const epigramBody = {
         content: content.trim(),
         author: finalAuthor,
         referenceTitle: referenceTitle.trim() || undefined,
         referenceUrl: referenceUrl.trim() || undefined,
         tags,
-      });
+      };
 
-      navigate(`/epigrams/${newEpigram.id}`);
+      const savedEpigram = isEditMode
+        ? await updateEpigram(epigramId, epigramBody)
+        : await createEpigram(epigramBody);
+
+      navigate(`/epigrams/${savedEpigram.id}`);
     } catch (error) {
       if (error instanceof Error) {
         alert(error.message);
       } else {
-        alert('에피그램 작성에 실패했습니다.');
+        alert(
+          isEditMode
+            ? '에피그램 수정에 실패했습니다.'
+            : '에피그램 작성에 실패했습니다.',
+        );
       }
     } finally {
       setIsSubmitting(false);
@@ -115,7 +153,7 @@ export default function AddEpigram() {
       <main className="flex justify-center bg-white pt-[136px]">
         <form onSubmit={handleSubmit} className="mb-[52px] w-[640px]">
           <h1 className="mb-[40px] text-[24px] font-semibold text-(--color-black-600)">
-            에피그램 만들기
+            {isEditMode ? '에피그램 수정하기' : '에피그램 만들기'}
           </h1>
 
           {/* 내용 */}
@@ -141,7 +179,7 @@ export default function AddEpigram() {
             <div className="mt-[8px] flex justify-between text-[14px]">
               <p className="text-(--color-state)">
                 {isContentOverLimit
-                  ? '내용은 500자 이내로 입력해 주세요.'
+                  ? '내용은 500자 이내로 입력해주세요.'
                   : ''}
               </p>
 
@@ -254,7 +292,7 @@ export default function AddEpigram() {
                   setTagInput(e.target.value);
 
                   if (e.target.value.length > 10) {
-                    setTagError('태그는 10자 이내로 입력해 주세요.');
+                    setTagError('태그는 10자 이내로 입력해주세요.');
                   } else {
                     setTagError('');
                   }
@@ -292,7 +330,7 @@ export default function AddEpigram() {
                   onClick={() => handleRemoveTag(tag)}
                   className="rounded-full bg-(--color-blue-100) px-[12px] py-[6px] text-[14px] text-(--color-blue-500)"
                 >
-                  #{tag} ×
+                  #{tag} x
                 </button>
               ))}
             </div>
@@ -311,7 +349,13 @@ export default function AddEpigram() {
                 : 'cursor-not-allowed bg-(--color-blue-200) opacity-50'
             }`}
           >
-            {isSubmitting ? '작성 중...' : '작성 완료'}
+            {isSubmitting
+              ? isEditMode
+                ? '수정 중...'
+                : '작성 중...'
+              : isEditMode
+                ? '수정 완료'
+                : '작성 완료'}
           </button>
         </form>
       </main>

@@ -1,7 +1,9 @@
-export const TEAM_ID = '22-수정';
+export const TEAM_ID = '12-4';
 export const BASE_URL = `https://fe-project-epigram-api.vercel.app/${TEAM_ID}`;
 
-type ApiFetchOptions = RequestInit;
+type ApiFetchOptions = RequestInit & {
+  skipAuth?: boolean;
+};
 
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem('refreshToken');
@@ -43,28 +45,32 @@ export const apiFetch = async (
   path: string,
   options: ApiFetchOptions = {},
 ) => {
-  const token = localStorage.getItem('accessToken');
+  const { skipAuth = false, ...fetchOptions } = options;
 
+   //처음 접근했을 때 토큰 값이 없기 때문에 함수를 실행할 때마다 token을 재할당하도록 apiFetch안에서 token을 정의해야한다.
+  const token = localStorage.getItem('accessToken') ?? '';
+ 
   let response = await fetch(`${BASE_URL}${path}`, {
-    ...options,
+    ...fetchOptions,
     headers: {
       'Content-Type': 'application/json',
-      ...(token && {
+      ...(!skipAuth && token && {
         Authorization: `Bearer ${token}`,
       }),
-      ...options.headers,
+      ...fetchOptions.headers,
     },
   });
 
-  if (response.status === 401 || response.status === 403) {
+
+  if (!skipAuth && (response.status === 401 || response.status === 403)) {
     const newAccessToken = await refreshAccessToken();
 
     response = await fetch(`${BASE_URL}${path}`, {
-      ...options,
+      ...fetchOptions,
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${newAccessToken}`,
-        ...options.headers,
+        ...fetchOptions.headers,
       },
     });
   }
