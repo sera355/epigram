@@ -284,7 +284,7 @@ export default function AddEpigram() {
               태그
             </label>
 
-            <div className="flex gap-[8px]">
+            <div>
               <input
                 type="text"
                 value={tagInput}
@@ -298,22 +298,13 @@ export default function AddEpigram() {
                   }
                 }}
                 onKeyDown={handleTagKeyDown}
-                placeholder="입력하여 태그 작성 (최대 10자)"
-                className={`h-[64px] flex-1 rounded-[8px] border px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] ${
+                placeholder="태그 입력 후 Enter (최대 10자)"
+                className={`h-[64px] w-full rounded-[8px] border px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] ${
                   tagError
                     ? 'border-(--color-state)'
                     : 'border-(--color-blue-300)'
                 }`}
               />
-
-              <button
-                type="button"
-                onClick={handleAddTag}
-                disabled={!tagInput.trim() || tags.length >= 3}
-                className="h-[64px] rounded-[8px] bg-(--color-blue-300) px-[20px] text-[16px] font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                추가
-              </button>
             </div>
 
             {tagError && (
@@ -345,8 +336,8 @@ export default function AddEpigram() {
             disabled={!isFormValid || isSubmitting}
             className={`h-[64px] w-full rounded-[8px] text-[20px] font-semibold text-white ${
               isFormValid && !isSubmitting
-                ? 'cursor-pointer bg-(--color-blue-300)'
-                : 'cursor-not-allowed bg-(--color-blue-200) opacity-50'
+                ? 'cursor-pointer bg-(--color-black-600)'
+                : 'cursor-not-allowed bg-(--color-blue-300)'
             }`}
           >
             {isSubmitting

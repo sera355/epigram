@@ -1,4 +1,4 @@
-export const TEAM_ID = '12-4';
+export const TEAM_ID = '22-5';
 export const BASE_URL = `https://fe-project-epigram-api.vercel.app/${TEAM_ID}`;
 
 type ApiFetchOptions = RequestInit & {

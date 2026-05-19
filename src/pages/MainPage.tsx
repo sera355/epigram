@@ -57,7 +57,7 @@ export default function MainPage() {
       <Header />
 
       <main className="min-h-screen bg-(--color-background) px-[120px] pt-[120px]">
-        <section className="mx-auto w-full max-w-[986px]">
+        <section className="mx-auto w-full max-w-[986px] pb-[114px]">
           <h1 className="mb-[32px] text-[24px] font-semibold text-[#2B2B2B]">
             피드
           </h1>
@@ -87,7 +87,7 @@ export default function MainPage() {
                 onClick={handleLoadMore}
                 disabled={isLoading}
                 className="font-['Pretendard'] flex h-[56px] cursor-pointer items-center justify-center 
-                gap-[8px] rounded-full border border-[#CFDBEA] bg-white px-[40px] 
+                gap-[8px] rounded-full border border-[#CFDBEA] px-[40px] 
                 text-[20px] font-medium text-(--color-blue-500) disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <img src={plus_blue} className="w-[24px]" alt="" />

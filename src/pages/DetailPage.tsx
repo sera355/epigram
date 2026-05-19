@@ -1,9 +1,13 @@
 ﻿import Header from '@/components/Header/Header';
 import waveLine from '@/assets/images/waveLine.svg';
+import ConfirmModal from '@/components/ConfirmModal';
+import CommentProfileModal from '@/components/CommentProfileModal';
+import NoticeModal from '@/components/NoticeModal';
 import more from '@/assets/icons/more-md.png';
 import share from '@/assets/icons/Share.png';
 import like from '@/assets/icons/like.png';
 import profileImage from '@/assets/profileImages/profile01.png';
+import bgImage from '@/assets/images/landing-bg.png';
 
 
 import {
@@ -19,7 +23,13 @@ import {
   type GetEpigramCommentsResponse,
 } from '@/apis/epigram';
 
-import { useEffect, useState, type KeyboardEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const mockEpigrams = {
@@ -63,6 +73,16 @@ const initialCommentsResponse: GetEpigramCommentsResponse = {
   list: [],
 };
 
+type DeleteTarget =
+  | { type: 'epigram' }
+  | { type: 'comment'; commentId: number };
+
+type SelectedCommentProfile = {
+  image: string;
+  name: string;
+  content: string;
+};
+
 export default function  EpigramDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -82,17 +102,33 @@ export default function  EpigramDetailPage() {
     null,
   );
   const [commentsErrorMessage, setCommentsErrorMessage] = useState('');
+  const [isLoadingMoreComments, setIsLoadingMoreComments] = useState(false);
+  const commentsLoadMoreRef = useRef<HTMLDivElement | null>(null);
   const [commentSubmitErrorMessage, setCommentSubmitErrorMessage] =
     useState('');
   const [commentManageErrorMessage, setCommentManageErrorMessage] =
     useState('');
   const [likeErrorMessage, setLikeErrorMessage] = useState('');
   const [isHandlingLike, setIsHandlingLike] = useState(false);
+  const [isEpigramDeleteSuccessOpen, setIsEpigramDeleteSuccessOpen] =
+    useState(false);
+  const [isCommentDeleteSuccessOpen, setIsCommentDeleteSuccessOpen] =
+    useState(false);
+  const [selectedCommentProfile, setSelectedCommentProfile] =
+    useState<SelectedCommentProfile | null>(null);
   const currentUserId = getCurrentUserId();
 
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(mockEpigrams.likeCount);
   const isMyEpigram = epigram?.writerId === currentUserId;
+  const referenceUrl = epigram?.referenceUrl?.trim();
+  const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+  const isDeleting =
+    deleteTarget?.type === 'epigram'
+      ? isHandlingEpigram
+      : deleteTarget?.type === 'comment'
+        ? handlingCommentId === deleteTarget.commentId
+        : false;
 
   useEffect(() => {
     if (!Number.isFinite(epigramId)) {
@@ -143,6 +179,70 @@ export default function  EpigramDetailPage() {
 
     loadComments();
   }, [id]);
+
+  const handleLoadMoreComments = useCallback(async () => {
+    if (
+      !Number.isFinite(epigramId) ||
+      commentsResponse.nextCursor === null ||
+      isLoadingMoreComments
+    ) {
+      return;
+    }
+
+    try {
+      setIsLoadingMoreComments(true);
+      setCommentsErrorMessage('');
+
+      const data = await getEpigramComments(
+        epigramId,
+        commentsResponse.nextCursor,
+        10,
+      );
+
+      setCommentsResponse((prev) => ({
+        totalCount: data.totalCount,
+        nextCursor: data.nextCursor,
+        list: [...prev.list, ...data.list],
+      }));
+    } catch (error) {
+      if (error instanceof Error) {
+        setCommentsErrorMessage(error.message);
+      } else {
+        setCommentsErrorMessage('댓글을 불러오지 못했습니다.');
+      }
+    } finally {
+      setIsLoadingMoreComments(false);
+    }
+  }, [
+    commentsResponse.nextCursor,
+    epigramId,
+    isLoadingMoreComments,
+  ]);
+
+  useEffect(() => {
+    const target = commentsLoadMoreRef.current;
+
+    if (!target || commentsResponse.nextCursor === null) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          void handleLoadMoreComments();
+        }
+      },
+      {
+        rootMargin: '160px',
+      },
+    );
+
+    observer.observe(target);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [commentsResponse.nextCursor, handleLoadMoreComments]);
 
   const handleCreateComment = async () => {
     if (
@@ -218,24 +318,24 @@ export default function  EpigramDetailPage() {
     }
   };
 
+  const handleRequestDeleteEpigram = () => {
+    setIsMenuOpen(false);
+    setEpigramErrorMessage('');
+    setDeleteTarget({ type: 'epigram' });
+  };
+
   const handleDeleteEpigram = async () => {
     if (!Number.isFinite(epigramId)) {
-      return;
-    }
-
-    const shouldDelete = window.confirm('에피그램을 삭제할까요?');
-
-    if (!shouldDelete) {
       return;
     }
 
     try {
       setIsHandlingEpigram(true);
       setEpigramErrorMessage('');
-      setIsMenuOpen(false);
 
       await deleteEpigram(epigramId);
-      navigate('/epigramlist');
+      setDeleteTarget(null);
+      setIsEpigramDeleteSuccessOpen(true);
     } catch (error) {
       if (error instanceof Error) {
         setEpigramErrorMessage(error.message);
@@ -290,14 +390,13 @@ export default function  EpigramDetailPage() {
     }
   };
 
+  const handleRequestDeleteComment = (commentId: number) => {
+    setCommentManageErrorMessage('');
+    setDeleteTarget({ type: 'comment', commentId });
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     if (!Number.isFinite(epigramId)) {
-      return;
-    }
-
-    const shouldDelete = window.confirm('댓글을 삭제할까요?');
-
-    if (!shouldDelete) {
       return;
     }
 
@@ -314,6 +413,9 @@ export default function  EpigramDetailPage() {
       if (editingCommentId === commentId) {
         handleCancelEditComment();
       }
+
+      setDeleteTarget(null);
+      setIsCommentDeleteSuccessOpen(true);
     } catch (error) {
       if (error instanceof Error) {
         setCommentManageErrorMessage(error.message);
@@ -325,6 +427,25 @@ export default function  EpigramDetailPage() {
     }
   };
 
+  const handleCancelDelete = () => {
+    if (isDeleting) {
+      return;
+    }
+
+    setDeleteTarget(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget?.type === 'epigram') {
+      void handleDeleteEpigram();
+      return;
+    }
+
+    if (deleteTarget?.type === 'comment') {
+      void handleDeleteComment(deleteTarget.commentId);
+    }
+  };
+
   
   return (
     <>
@@ -333,7 +454,9 @@ export default function  EpigramDetailPage() {
       <main className="min-h-screen bg-[#F5F7FA]">
 
         {/* 에피그램 상세 영역 */}
-        <section className="bg-white relative min-h-[472px] bg-position-[center_top]">
+        <section className="group bg-white relative min-h-[472px] bg-position-[center_top]" style={{backgroundImage: `url(${bgImage})`}}>
+  
+
           <div className="mx-auto w-[640px] pt-[120px] pb-[40px]">
 
 
@@ -347,33 +470,48 @@ export default function  EpigramDetailPage() {
                 ))}
               </div>
 
-              {/* 더보기 버튼 + 드롭다운 */}
-              {isMyEpigram && (
-                <div className="relative">
-                  <button type="button" onClick={()=>setIsMenuOpen((prev)=>!prev)} className="cursor-pointer">
-                    <img src={more} className="w-[36px]"/>
-                  </button>
+              {/* 바로가기 버튼 + 더보기 버튼 + 드롭다운 */}
+              {(referenceUrl || isMyEpigram) && (
+                <div className="relative flex items-center gap-[12px]">
+                  {referenceUrl && (
+                    <a
+                      href={referenceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex h-[40px] items-center rounded-full bg-(--color-blue-400) px-[18px] font-['Pretendard'] text-[16px] text-white shadow-sm"
+                    >
+                      새창
+                    </a>
+                  )}
+
+                  {isMyEpigram && (
+                    <div className="relative">
+                      <button type="button" onClick={()=>setIsMenuOpen((prev)=>!prev)} className="cursor-pointer">
+                        <img src={more} className="w-[36px]"/>
+                      </button>
 
 
-                  {/* 드롭다운 */}
-                  {isMenuOpen && (
-                    <div className="absolute right-0 top-[48px] z-50 flex h-[112px] min-w-max flex-col rounded-[20px] border border-[#D7E0EE] bg-white shadow-sm">
-                      <button
-                        type="button"
-                        onClick={() => navigate(`/epigrams/${epigramId}/edit`)}
-                        disabled={isHandlingEpigram}
-                        className="cursor-pointer flex flex-1 items-center gap-[10px] px-[32px] py-[12px] text-[20px] leading-[32px] font-normal text-(--color-black-600) disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        수정하기
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleDeleteEpigram}
-                        disabled={isHandlingEpigram}
-                        className="cursor-pointer flex flex-1 items-center gap-[10px] px-[32px] py-[12px] text-[20px] leading-[32px] font-normal text-(--color-black-600) disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        삭제하기
-                      </button>
+                      {/* 드롭다운 */}
+                      {isMenuOpen && (
+                        <div className="absolute right-0 top-[48px] z-50 flex h-[112px] min-w-max flex-col rounded-[20px] border border-[#D7E0EE] bg-white shadow-sm">
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/epigrams/${epigramId}/edit`)}
+                            disabled={isHandlingEpigram}
+                            className="cursor-pointer flex flex-1 items-center gap-[10px] px-[32px] py-[12px] text-[20px] leading-[32px] font-normal text-(--color-black-600) disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            수정하기
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleRequestDeleteEpigram}
+                            disabled={isHandlingEpigram}
+                            className="cursor-pointer flex flex-1 items-center gap-[10px] px-[32px] py-[12px] text-[20px] leading-[32px] font-normal text-(--color-black-600) disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            삭제하기
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -501,12 +639,72 @@ export default function  EpigramDetailPage() {
                 }
                 onCancelEdit={handleCancelEditComment}
                 onUpdate={() => handleUpdateComment(comment.id)}
-                onDelete={() => handleDeleteComment(comment.id)}
+                onDelete={() => handleRequestDeleteComment(comment.id)}
+                onOpenProfile={() =>
+                  setSelectedCommentProfile({
+                    image: comment.writer.image ?? profileImage,
+                    name: comment.writer.nickname,
+                    content: comment.content,
+                  })
+                }
               />
             ))}
+
+            <div ref={commentsLoadMoreRef} className="h-[1px]" />
+
+            {isLoadingMoreComments && (
+              <p className="py-[24px] text-center text-[14px] text-[#8B95A1]">
+                댓글을 불러오는 중입니다.
+              </p>
+            )}
           </div>
         </section>
       </main>
+
+      {deleteTarget && (
+        <ConfirmModal
+          title={
+            deleteTarget.type === 'epigram'
+              ? '에피그램을 삭제할까요?'
+              : '댓글을 삭제하시겠어요?'
+          }
+          description={deleteTarget.type==='epigram'
+            ? "에피그램은 삭제 후 복구할 수 없어요."
+            : "댓글은 삭제 후 복구할 수 없어요."
+          }
+          confirmText="삭제"
+          pendingConfirmText="삭제 중"
+          isPending={isDeleting}
+          variant="danger"
+          onCancel={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+        />
+      )}
+
+      {isEpigramDeleteSuccessOpen && (
+        <NoticeModal
+          title="에피그램이 삭제되었어요"
+          confirmText="확인"
+          onConfirm={() => navigate('/epigramlist')}
+        />
+      )}
+
+      {isCommentDeleteSuccessOpen && (
+        <NoticeModal
+          title="댓글이 삭제되었어요"
+          confirmText="확인"
+          onConfirm={() => setIsCommentDeleteSuccessOpen(false)}
+        />
+      )}
+
+      {selectedCommentProfile && (
+        <CommentProfileModal
+          image={selectedCommentProfile.image}
+          name={selectedCommentProfile.name}
+          content={selectedCommentProfile.content}
+          onClose={() => setSelectedCommentProfile(null)}
+        />
+      )}
     </>
   );
 }
@@ -525,6 +723,7 @@ type CommentItemProps = {
   onCancelEdit: () => void;
   onUpdate: () => void;
   onDelete: () => void;
+  onOpenProfile: () => void;
 };
 
 function EditableCommentItem({
@@ -541,19 +740,32 @@ function EditableCommentItem({
   onCancelEdit,
   onUpdate,
   onDelete,
+  onOpenProfile,
 }: CommentItemProps) {
   return (
     <article className="flex gap-[16px] border-b border-[#D7E0EE] py-[24px]">
-      <img
-        src={image}
-        alt="profile"
-        className="h-[40px] w-[40px] rounded-full object-cover"
-      />
+      <button
+        type="button"
+        onClick={onOpenProfile}
+        className="h-[40px] w-[40px] shrink-0 rounded-full cursor-pointer"
+      >
+        <img
+          src={image}
+          alt={`${name} 프로필`}
+          className="h-full w-full rounded-full object-cover"
+        />
+      </button>
 
       <div className="flex-1">
         <div className="mb-[8px] flex items-center justify-between">
           <div className="flex items-center gap-[6px] text-[13px] text-[#8B95A1]">
-            <span>{name}</span>
+            <button
+              type="button"
+              onClick={onOpenProfile}
+              className="font-medium hover:text-[#2B2B2B] cursor-pointer"
+            >
+              {name}
+            </button>
             <span>{time}</span>
           </div>
 
@@ -586,7 +798,7 @@ function EditableCommentItem({
                     type="button"
                     onClick={onStartEdit}
                     disabled={isHandling}
-                    className="text-[#8B95A1] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="text-[#8B95A1] underline disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     수정
                   </button>
@@ -594,7 +806,7 @@ function EditableCommentItem({
                     type="button"
                     onClick={onDelete}
                     disabled={isHandling}
-                    className="text-[#FF6577] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="text-[#FF6577] underline disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     삭제
                   </button>
