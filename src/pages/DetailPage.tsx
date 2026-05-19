@@ -478,9 +478,9 @@ export default function  EpigramDetailPage() {
                       href={referenceUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex h-[40px] items-center rounded-full bg-(--color-blue-400) px-[18px] font-['Pretendard'] text-[16px] text-white shadow-sm"
+                      className="flex h-[40px] items-center rounded-full border border-(--color-blue-300) border-1 px-[18px] font-['Pretendard'] text-[16px] text-(--color-blue-400)"
                     >
-                      새창
+                      원본 보러가기
                     </a>
                   )}
 

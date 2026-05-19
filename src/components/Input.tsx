@@ -1,7 +1,8 @@
+import { useId } from 'react';
 import type { ChangeEvent, FocusEvent } from 'react';
 
 type InputProps = {
-  id: string;
+  id?: string;
   label?: string;
   type?: string;
   placeholder?: string;
@@ -23,11 +24,14 @@ export default function Input({
   onBlur,
   className = '',
 }: InputProps) {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+
   return (
     <div className={className}>
       {label && (
         <label
-          htmlFor={id}
+          htmlFor={inputId}
           className="mb-[16px] block text-[16px] font-semibold text-(--color-blue-900)"
         >
           {label}
@@ -35,7 +39,7 @@ export default function Input({
       )}
 
       <input
-        id={id}
+        id={inputId}
         type={type}
         placeholder={placeholder}
         value={value}

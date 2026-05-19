@@ -144,7 +144,7 @@ export default function SignUp() {
       <SimpleHeader />
 
       <section className="flex justify-center pt-[160px]">
-        <div className="w-[448px]">
+        <div className="w-[640px]">
           <Link to="/epigramlist" className="mb-[64px] flex justify-center">
             <img src={Logo} alt="Epigram" className="h-[48px] w-[158px]" />
           </Link>

@@ -5,6 +5,12 @@ import { createEpigram, getEpigram, updateEpigram } from '@/apis/epigram';
 
 type AuthorType = 'direct' | 'unknown' | 'me';
 
+type FormErrors = {
+  content: string;
+  author: string;
+  referenceUrl: string;
+};
+
 export default function AddEpigram() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -19,6 +25,11 @@ export default function AddEpigram() {
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [tagError, setTagError] = useState('');
+  const [errors, setErrors] = useState<FormErrors>({
+    content: '',
+    author: '',
+    referenceUrl: '',
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isContentOverLimit = content.length > 500;
@@ -65,10 +76,91 @@ export default function AddEpigram() {
 
   const finalAuthor = getFinalAuthor();
 
+  const validateContent = (contentValue: string) => {
+    if (contentValue.trim().length === 0) {
+      return '내용을 입력해주세요.';
+    }
+
+    if (contentValue.length > 500) {
+      return '내용은 500자 이내로 입력해주세요.';
+    }
+
+    return '';
+  };
+
+  const validateAuthor = (authorTypeValue: AuthorType, authorValue: string) => {
+    if (authorTypeValue === 'direct' && authorValue.trim().length === 0) {
+      return '저자를 입력해주세요.';
+    }
+
+    return '';
+  };
+
+  const validateReferenceUrl = (referenceUrlValue: string) => {
+    const trimmedReferenceUrl = referenceUrlValue.trim();
+
+    if (!trimmedReferenceUrl) {
+      return '';
+    }
+
+    try {
+      const url = new URL(trimmedReferenceUrl);
+
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return '올바른 URL을 입력해주세요.';
+      }
+    } catch {
+      return '올바른 URL을 입력해주세요.';
+    }
+
+    return '';
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      content: validateContent(content),
+      author: validateAuthor(authorType, author),
+      referenceUrl: validateReferenceUrl(referenceUrl),
+    };
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((error) => error === '');
+  };
+
+  const handleBlur = (field: keyof FormErrors) => {
+    let errorMessage = '';
+
+    if (field === 'content') {
+      errorMessage = validateContent(content);
+    }
+
+    if (field === 'author') {
+      errorMessage = validateAuthor(authorType, author);
+    }
+
+    if (field === 'referenceUrl') {
+      errorMessage = validateReferenceUrl(referenceUrl);
+    }
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: errorMessage,
+    }));
+  };
+
+  const handleAuthorTypeChange = (nextAuthorType: AuthorType) => {
+    setAuthorType(nextAuthorType);
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      author: validateAuthor(nextAuthorType, author),
+    }));
+  };
+
   const isFormValid =
-    content.trim().length > 0 &&
-    !isContentOverLimit &&
-    finalAuthor.trim().length > 0 &&
+    !validateContent(content) &&
+    !validateAuthor(authorType, author) &&
+    !validateReferenceUrl(referenceUrl) &&
     tags.length <= 3 &&
     tags.every((tag) => tag.length <= 10) &&
     !tagError;
@@ -113,7 +205,9 @@ export default function AddEpigram() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!isFormValid) return;
+    const isValid = validateForm();
+
+    if (!isValid || tagError) return;
 
     try {
       setIsSubmitting(true);
@@ -151,7 +245,11 @@ export default function AddEpigram() {
       <Header />
 
       <main className="flex justify-center bg-white pt-[136px]">
-        <form onSubmit={handleSubmit} className="mb-[52px] w-[640px]">
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          className="mb-[52px] w-[640px]"
+        >
           <h1 className="mb-[40px] text-[24px] font-semibold text-(--color-black-600)">
             {isEditMode ? '에피그램 수정하기' : '에피그램 만들기'}
           </h1>
@@ -160,27 +258,37 @@ export default function AddEpigram() {
           <section className="mb-[54px]">
             <label className="mb-[27px] block text-[20px] font-semibold text-(--color-black-600)">
               내용{' '}
-              <span className="text-[20px] leading-[32px] text-(--color-state)">
+              <span className="text-[24px] pt-[100px] leading-[32px] text-(--color-state)">
                 *
               </span>
             </label>
 
             <textarea
               value={content}
-              onChange={(e) => setContent(e.target.value)}
+              onChange={(e) => {
+                const nextContent = e.target.value;
+
+                setContent(nextContent);
+
+                if (errors.content || nextContent.length > 500) {
+                  setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    content: validateContent(nextContent),
+                  }));
+                }
+              }}
+              onBlur={() => handleBlur('content')}
               placeholder="500자 이내로 입력해주세요."
               className={`h-[150px] w-full resize-none rounded-[8px] border px-[16px] py-[18px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] ${
-                isContentOverLimit
+                errors.content || isContentOverLimit
                   ? 'border-(--color-state)'
                   : 'border-[#D6DCE5]'
               }`}
             />
 
             <div className="mt-[8px] flex justify-between text-[14px]">
-              <p className="text-(--color-state)">
-                {isContentOverLimit
-                  ? '내용은 500자 이내로 입력해주세요.'
-                  : ''}
+              <p className="font-medium text-(--color-state)">
+                {errors.content}
               </p>
 
               <p
@@ -208,7 +316,7 @@ export default function AddEpigram() {
                   type="radio"
                   name="authorType"
                   checked={authorType === 'direct'}
-                  onChange={() => setAuthorType('direct')}
+                  onChange={() => handleAuthorTypeChange('direct')}
                   className="h-[24px] w-[24px] accent-[#2D6CDF]"
                 />
                 직접 입력
@@ -219,7 +327,7 @@ export default function AddEpigram() {
                   type="radio"
                   name="authorType"
                   checked={authorType === 'unknown'}
-                  onChange={() => setAuthorType('unknown')}
+                  onChange={() => handleAuthorTypeChange('unknown')}
                   className="h-[24px] w-[24px] accent-[#2D6CDF]"
                 />
                 알 수 없음
@@ -230,7 +338,7 @@ export default function AddEpigram() {
                   type="radio"
                   name="authorType"
                   checked={authorType === 'me'}
-                  onChange={() => setAuthorType('me')}
+                  onChange={() => handleAuthorTypeChange('me')}
                   className="h-[24px] w-[24px] accent-[#2D6CDF]"
                 />
                 본인
@@ -240,17 +348,37 @@ export default function AddEpigram() {
             <input
               type="text"
               value={author}
-              onChange={(e) => setAuthor(e.target.value)}
+              onChange={(e) => {
+                setAuthor(e.target.value);
+
+                if (errors.author) {
+                  setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    author: validateAuthor(authorType, e.target.value),
+                  }));
+                }
+              }}
+              onBlur={() => handleBlur('author')}
               disabled={authorType !== 'direct'}
               placeholder={
                 authorType === 'direct'
                   ? '저자 이름 입력'
                   : authorType === 'unknown'
                     ? '알 수 없음'
-                    : '본인'
+                  : '본인'
               }
-              className="h-[64px] w-full rounded-[8px] border border-(--color-blue-300) px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] disabled:bg-gray-100"
+              className={`h-[64px] w-full rounded-[8px] border px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] disabled:bg-gray-100 ${
+                errors.author
+                  ? 'border-(--color-state)'
+                  : 'border-(--color-blue-300)'
+              }`}
             />
+
+            {errors.author && (
+              <p className="mt-[8px] text-right text-[14px] font-medium text-(--color-state)">
+                {errors.author}
+              </p>
+            )}
           </section>
 
           {/* 출처 */}
@@ -271,10 +399,30 @@ export default function AddEpigram() {
               <input
                 type="url"
                 value={referenceUrl}
-                onChange={(e) => setReferenceUrl(e.target.value)}
+                onChange={(e) => {
+                  setReferenceUrl(e.target.value);
+
+                  if (errors.referenceUrl) {
+                    setErrors((prevErrors) => ({
+                      ...prevErrors,
+                      referenceUrl: validateReferenceUrl(e.target.value),
+                    }));
+                  }
+                }}
+                onBlur={() => handleBlur('referenceUrl')}
                 placeholder="URL (ex. https://www.website.com)"
-                className="h-[64px] w-full rounded-[8px] border border-(--color-blue-300) px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF]"
+                className={`h-[64px] w-full rounded-[8px] border px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] ${
+                  errors.referenceUrl
+                    ? 'border-(--color-state)'
+                    : 'border-(--color-blue-300)'
+                }`}
               />
+
+              {errors.referenceUrl && (
+                <p className="mt-[-8px] text-right text-[14px] font-medium text-(--color-state)">
+                  {errors.referenceUrl}
+                </p>
+              )}
             </div>
           </section>
 
@@ -298,7 +446,7 @@ export default function AddEpigram() {
                   }
                 }}
                 onKeyDown={handleTagKeyDown}
-                placeholder="태그 입력 후 Enter (최대 10자)"
+                placeholder="입력하여 태그 작성 (최대 10자)"
                 className={`h-[64px] w-full rounded-[8px] border px-[16px] text-[16px] text-(--color-black-950) outline-none placeholder:text-(--color-blue-400) focus:border-[#2D6CDF] ${
                   tagError
                     ? 'border-(--color-state)'

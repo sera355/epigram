@@ -90,7 +90,7 @@ export default function LogIn() {
     <>
       <SimpleHeader />
 
-      <main className="min-h-[calc(100vh-80px)] bg-(--color-background) pt-[293px]">
+      <main className="min-h-screen bg-(--color-background) pt-[293px]">
         <section className="mx-auto flex w-[640px] flex-col items-center">
           <img
             src={logo}
@@ -158,23 +158,26 @@ export default function LogIn() {
               disabled={!isFormValid || isSubmitting}
               className={`h-[64px] w-[640px] rounded-[12px] text-[20px] font-semibold text-white ${
                 isFormValid && !isSubmitting
-                  ? 'cursor-pointer bg-(--color-blue-400)'
-                  : 'cursor-not-allowed bg-(--color-blue-200)'
+                  ? 'cursor-pointer bg-(--color-black-500) '
+                  : 'cursor-not-allowed bg-(--color-blue-300) border border-(--color-blue-200)'
               }`}
             >
               {isSubmitting ? '로그인 중...' : '로그인'}
             </button>
           </form>
-
-          <p className="mt-[24px] text-[16px] font-medium text-(--color-gray-300)">
+          
+          <div className="mt-[24px] w-full text-right">
+            <p className="text-[20px] font-medium text-(--color-blue-400)">
             회원이 아니신가요?{' '}
             <Link
               to="/signup"
-              className="text-(--color-blue-400) underline underline-offset-2"
+              className="text-(--color-black-500) text-[20px] underline underline-offset-2"
             >
               가입하기
             </Link>
           </p>
+          </div>
+          
         </section>
       </main>
     </>
